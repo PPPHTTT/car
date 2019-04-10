@@ -117,4 +117,8 @@ class MusicOperationTools: NSObject {
         UIApplication.shared.beginReceivingRemoteControlEvents()
     }
     
+    func getCurIndex() -> Int{
+        return currentPlayIndex
+    }
+    
 }

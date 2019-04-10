@@ -79,7 +79,7 @@ class HomeVC: UIViewController ,URLSessionDelegate,UITableViewDataSource,UITable
             let m2:MusicModel = MusicModel()
             m2.name = "如约而至"
             m2.image = "http://qukufile2.qianqian.com/data2/pic/a78755077b72153b3b7c084c9eed4e92/612150690/612150690.jpg@s_2,w_300,h_300"
-            m2.url = "http://fs.w.kugou.com/201903201452/21d9195d8ab22b78b4e1f18b8418c025/G123/M09/19/00/G4cBAFsnQUeAMrb5AD5yEvBAAJY536.mp3"
+            m2.url = "http://183.222.102.77/cache/hc.yinyuetai.com/uploads/videos/common/C7A7015FF86A691D2B17F01FF2E7F6CA.mp4?sc=f865957889392976&amp;ich_args2=396-10104004017503_71d4dace04d5f0243aca04298d3431f2_10307403_9c896128dfc5f5d19632518939a83798_9d8085767bc01272cb215bb68592a4c5"
             m2.singer = "许嵩"
             let m3:MusicModel = MusicModel()
             m3.name = "庐州月"
@@ -93,12 +93,17 @@ class HomeVC: UIViewController ,URLSessionDelegate,UITableViewDataSource,UITable
             //init musicMs
             MusicOperationTools.shareInstance.musicMs = musicMs
             
-            title1.text = musicMs[0].name
-            button1.setBackgroundImage(UIImage(data: try! Data(contentsOf: URL(string: musicMs[0].image!)!)), for: .normal)
-            title2.text = musicMs[1].name
-            button2.setBackgroundImage(UIImage(data: try! Data(contentsOf: URL(string: musicMs[1].image!)!)), for: .normal)
-            title3.text = musicMs[2].name
-            button3.setBackgroundImage(UIImage(data: try! Data(contentsOf: URL(string: musicMs[2].image!)!)), for: .normal)
+            do{
+                title1.text = musicMs[0].name
+                button1.setBackgroundImage(UIImage(data: try Data(contentsOf: URL(string: musicMs[0].image!)!)), for: .normal)
+                title2.text = musicMs[1].name
+                button2.setBackgroundImage(UIImage(data: try Data(contentsOf: URL(string: musicMs[1].image!)!)), for: .normal)
+                title3.text = musicMs[2].name
+                button3.setBackgroundImage(UIImage(data: try Data(contentsOf: URL(string: musicMs[2].image!)!)), for: .normal)
+            }catch{
+                print(error)
+                return cell
+            }
             
         }
         
@@ -138,7 +143,12 @@ class HomeVC: UIViewController ,URLSessionDelegate,UITableViewDataSource,UITable
             //实例化将要跳转的controller
             let sb = UIStoryboard(name: "Main", bundle:nil)
             let vc = sb.instantiateViewController(withIdentifier: "musicDetailVC") as! MusicDetailVC
-            MusicOperationTools.shareInstance.playMusic(musicMs[0])
+            
+            //若当前未播放音乐或所播放音乐不同，则重新播放
+            if (MusicOperationTools.shareInstance.tool.player == nil)||MusicOperationTools.shareInstance.getCurIndex() != 0{
+                MusicOperationTools.shareInstance.playMusic(musicMs[0])
+            }
+           // MusicOperationTools.shareInstance.playMusic(musicMs[0])
             //跳转
            self.navigationController?.show(vc, sender: sender)
         }else if path.row == 1{

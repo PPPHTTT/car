@@ -42,12 +42,13 @@ class MusicDetailVC: UIViewController {
         
 
     }
+    //加载时执行
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateOnce()
         addTimer()
     }
-    
+    //关闭时执行
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         removeTimer()
@@ -71,7 +72,7 @@ class MusicDetailVC: UIViewController {
     }
     //bug exist?????????????????
     @IBAction func tap(_ sender: UITapGestureRecognizer) {
-        print("tap")
+        //print("tap")
         sender.numberOfTapsRequired = 1
         let value = sender.location(in: sender.view).x / (sender.view?.frame.width)!
         musicSlider.value = Float(value)
@@ -109,7 +110,7 @@ class MusicDetailVC: UIViewController {
     
     @IBAction func menu(_ sender: Any) {
     }
-    
+    //初始化按钮约束和图片
     func initButtons(){
         playButton.snp.makeConstraints{(make) -> Void in
             make.top.equalTo(maxTime.snp.bottom).offset(95*tool.HSCALE)
@@ -210,7 +211,7 @@ class MusicDetailVC: UIViewController {
     func updateOnce() {
         let musicMessageM = MusicOperationTools.shareInstance.getMusicMessageModel()
         guard let musicM = musicMessageM.musicM else {return}
-
+        musicImg.image = UIImage(data: try! Data(contentsOf: URL(string: musicM.image!)!))
         musicName.text = musicM.name
         singerName.text = musicM.singer
         maxTime.text = musicMessageM.totalTimeFormat
