@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class MusicDetailVC: UIViewController {
+class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource{
     
     @IBOutlet weak var bodyView: UIView!
     @IBOutlet weak var musicImg: UIImageView!
@@ -27,10 +27,30 @@ class MusicDetailVC: UIViewController {
     
     fileprivate var updateTimesTimer: Timer?
     let tool = toolfuncs()
-    
+    //弹出菜单
+    var menuView : UIView = UIView()
+    var menuTV : UITableView = UITableView()
+    var menuCloseButton : UIButton = UIButton()
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
+    
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return MusicOperationTools.shareInstance.musicMs.count
+    }
+    private func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+         return 121*tool.WSCALE
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.textLabel?.text = "MyFirstSwift"
+        cell.detailTextLabel?.text = "gaga"
+        return cell
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
@@ -72,7 +92,7 @@ class MusicDetailVC: UIViewController {
     }
     //bug exist?????????????????
     @IBAction func tap(_ sender: UITapGestureRecognizer) {
-        //print("tap")
+        print("tap")
         sender.numberOfTapsRequired = 1
         let value = sender.location(in: sender.view).x / (sender.view?.frame.width)!
         musicSlider.value = Float(value)
@@ -109,6 +129,19 @@ class MusicDetailVC: UIViewController {
     }
     
     @IBAction func menu(_ sender: Any) {
+        menuView.isHidden = false
+        //动画
+        UIView.animate(withDuration: 1, animations: {
+            //也可以用改变的约束不多，也可以用snp_updateConstraints方法
+            self.menuView.snp.remakeConstraints({ (make) in
+                make.width.equalTo(750*self.tool.WSCALE)
+                make.height.equalTo(953*self.tool.HSCALE)
+                make.bottom.equalTo(self.bodyView.snp.bottom).offset(0)
+            })
+            //用来立即刷新布局（不写无法实现动画移动，会变成瞬间移动）
+            self.view.layoutIfNeeded()
+        })
+        
     }
     //初始化按钮约束和图片
     func initButtons(){
@@ -152,6 +185,9 @@ class MusicDetailVC: UIViewController {
         menuButton.setBackgroundImage(UIImage(named: "菜单"), for: .normal)
     }
     func initView(){
+        /*********************************************************/
+        //init view
+        /*********************************************************/
         musicImg.layer.cornerRadius = 10
         //get height
         let naviH = self.navigationController?.navigationBar.frame.height
@@ -189,15 +225,73 @@ class MusicDetailVC: UIViewController {
             make.left.equalTo(musicSlider.snp.left)
             make.top.equalTo(musicSlider.snp.bottom).offset(28*tool.HSCALE)
         }
-        //init buttons
-        initButtons() 
-        //init font
+        //---------------------------------------------------------//
+        //end
+        //---------------------------------------------------------//
+        
+        
+        /*********************************************************/
+        //init menu
+        /*********************************************************/
+        menuView.addSubview(menuTV)
+        menuView.addSubview(menuCloseButton)
+        self.view.addSubview(menuView)
+        menuView.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(750*tool.WSCALE)
+            make.height.equalTo(953*tool.HSCALE)
+            make.bottom.equalTo(bodyView.snp.bottom).offset(0)
+        }
+        menuTV.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(750*tool.WSCALE)
+            make.top.equalTo(menuView.snp.top).offset(121*tool.HSCALE)
+            make.bottom.equalTo(menuView.snp.bottom).offset(-98*tool.HSCALE)
+        }
+        menuCloseButton.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(750*tool.WSCALE)
+            make.top.equalTo(menuTV.snp.bottom).offset(0)
+            make.bottom.equalTo(menuView.snp.bottom).offset(0)
+        }
+        menuCloseButton.setTitle("关闭", for: .normal)
+        menuCloseButton.setTitleColor(UIColor(red: 0x33/255, green: 0x33/255, blue: 0x33/255, alpha: 1), for: .normal)
+        //menuCloseButton.backgroundColor = UIColor.blue
+        menuCloseButton.titleLabel?.font = UIFont.init(name: "PingFangSC", size: 36*tool.HSCALE)
+        menuCloseButton.titleLabel?.font = UIFont.systemFont(ofSize: 36*tool.HSCALE, weight: UIFont.Weight.regular)
+        menuCloseButton.layer.borderWidth = 0.5
+        menuCloseButton.layer.borderColor = UIColor(red: 0xd5/255, green: 0xd5/255, blue: 0xd5/255, alpha: 1).cgColor
+        //添加点击事件
+        menuCloseButton.addTarget(self, action: Selector("closeMenu"), for: UIControl.Event.touchUpInside)
+        menuView.isHidden = true
+        //---------------------------------------------------------//
+        //end menu
+        //---------------------------------------------------------//
+        
+        
+        /*********************************************************/
+        //init buttons and fonts
+        /*********************************************************/
+        initButtons()
         musicName.font = UIFont.systemFont(ofSize: 36*tool.HSCALE, weight: UIFont.Weight.medium)
         singerName.font = UIFont.systemFont(ofSize: 24*tool.HSCALE, weight: UIFont.Weight.medium)
         maxTime.font = UIFont.systemFont(ofSize: 24*tool.HSCALE, weight: UIFont.Weight.medium)
         curTime.font = UIFont.systemFont(ofSize: 24*tool.HSCALE, weight: UIFont.Weight.medium)
+        //---------------------------------------------------------//
+        //end button
+        //---------------------------------------------------------//
     }
-    
+    //close menu button action
+    @objc func closeMenu(){
+        //
+        //动画
+        UIView.animate(withDuration: 1, animations: {
+        //也可以用改变的约束不多，也可以用snp_updateConstraints方法
+            self.menuView.snp.remakeConstraints({ (make) in
+                make.top.equalTo(self.bodyView.snp.bottom).offset(0)
+        })
+        //用来立即刷新布局（不写无法实现动画移动，会变成瞬间移动）
+        self.view.layoutIfNeeded()
+    })
+        //menuView.isHidden = true
+    }
     
     func addTimer() {
         updateTimesTimer = Timer(timeInterval: 1, target: self, selector: #selector(MusicDetailVC.updateTimes), userInfo: nil, repeats: true)
