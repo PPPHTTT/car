@@ -97,7 +97,7 @@
                                 <rect key="frame" x="0.0" y="342" width="375" height="276"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MainCell" rowHeight="190" id="U14-kK-xaF">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MainCell" rowHeight="190" id="U14-kK-xaF">
                                         <rect key="frame" x="0.0" y="28" width="375" height="190"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="U14-kK-xaF" id="4Jl-lP-Fd3">
@@ -145,6 +145,9 @@
                                                         <constraint firstAttribute="height" constant="90" id="HXp-eL-3rR"/>
                                                     </constraints>
                                                     <state key="normal" backgroundImage="1"/>
+                                                    <connections>
+                                                        <action selector="muiscClickAction_3:" destination="uCt-O2-9yy" eventType="touchUpInside" id="Maa-3k-GYh"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="107" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wvf-Qr-YEA">
                                                     <rect key="frame" x="250" y="158" width="115" height="16"/>
@@ -159,6 +162,9 @@
                                                         <constraint firstAttribute="width" secondItem="e2o-p1-XxE" secondAttribute="height" multiplier="23:18" id="iGj-7m-4YD"/>
                                                     </constraints>
                                                     <state key="normal" backgroundImage="1"/>
+                                                    <connections>
+                                                        <action selector="musicClickAction_2:" destination="uCt-O2-9yy" eventType="touchUpInside" id="wVZ-t1-DSV"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
@@ -260,7 +266,7 @@
                                 <rect key="frame" x="0.0" y="49" width="375" height="550"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="musicCell" rowHeight="75" id="eON-5f-Bo5">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="musicCell" rowHeight="75" id="eON-5f-Bo5">
                                         <rect key="frame" x="0.0" y="28" width="375" height="75"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="eON-5f-Bo5" id="AU6-Rq-NoL">

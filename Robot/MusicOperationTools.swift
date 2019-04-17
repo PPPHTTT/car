@@ -49,14 +49,14 @@ class MusicOperationTools: NSObject {
     }
     
     func playCurrentMusic() {
-       let model = musicMs[currentPlayIndex]
-        playMusic(model)
-//        if tool.player == nil {
-//            let model = musicMs[currentPlayIndex]
-//            playMusic(model)
-//        }else{
-//            tool.playCurrentMusic()
-//        }
+//       let model = musicMs[currentPlayIndex]
+//        playMusic(model)
+        if tool.player == nil {
+            let model = musicMs[currentPlayIndex]
+            playMusic(model)
+        }else{
+            tool.playCurrentMusic()
+        }
     }
     
     func pauseCurrentMusic() {

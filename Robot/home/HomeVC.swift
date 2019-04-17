@@ -120,9 +120,6 @@ class HomeVC: UIViewController ,URLSessionDelegate,UITableViewDataSource,UITable
             //实例化将要跳转的controller
             let sb = UIStoryboard(name: "Main", bundle:nil)
             let vc = sb.instantiateViewController(withIdentifier: "musicVC") as! MusicVC
-            //            vc.imageUrl = URL1
-            //            vc.deHeadImage = head1
-            //            vc.talkID = phone
             //跳转
             self.navigationController?.show(vc, sender:tableView)
         }else if indexPath.row == 1{
@@ -156,8 +153,58 @@ class HomeVC: UIViewController ,URLSessionDelegate,UITableViewDataSource,UITable
         }else if path.row == 2{
             //others
         }
+        
         //(tableview.cellForRow(at: NSIndexPath(row: 1, section: 0) as IndexPath)?.viewWithTag(102) as! UIButton).setBackgroundImage(UIImage(named: "暂停"), for: UIControl.State.normal)
     }
+    
+    @IBAction func musicClickAction_2(_ sender: UIButton) {
+        //get button indexrow
+        let  cell:UITableViewCell = sender.superview?.superview as! UITableViewCell
+        let  path:IndexPath = self.tableview.indexPath(for: cell)!
+        if path.row == 0{
+            //music
+            //实例化将要跳转的controller
+            let sb = UIStoryboard(name: "Main", bundle:nil)
+            let vc = sb.instantiateViewController(withIdentifier: "musicDetailVC") as! MusicDetailVC
+            
+            //若当前未播放音乐或所播放音乐不同，则重新播放
+            if (MusicOperationTools.shareInstance.tool.player == nil)||MusicOperationTools.shareInstance.getCurIndex() != 1{
+                MusicOperationTools.shareInstance.playMusic(musicMs[1])
+            }
+            //跳转
+            self.navigationController?.show(vc, sender: sender)
+        }else if path.row == 1{
+            //news
+        }else if path.row == 2{
+            //others
+        }
+    }
+    
+    @IBAction func muiscClickAction_3(_ sender: Any) {
+        //get button indexrow
+        let  cell:UITableViewCell = (sender as AnyObject).superview?.superview as! UITableViewCell
+        let  path:IndexPath = self.tableview.indexPath(for: cell)!
+        if path.row == 0{
+            //music
+            //实例化将要跳转的controller
+            let sb = UIStoryboard(name: "Main", bundle:nil)
+            let vc = sb.instantiateViewController(withIdentifier: "musicDetailVC") as! MusicDetailVC
+            
+            //若当前未播放音乐或所播放音乐不同，则重新播放
+            if (MusicOperationTools.shareInstance.tool.player == nil)||MusicOperationTools.shareInstance.getCurIndex() != 2{
+                MusicOperationTools.shareInstance.playMusic(musicMs[2])
+            }
+            //跳转
+            self.navigationController?.show(vc, sender: sender)
+        }else if path.row == 1{
+            //news
+        }else if path.row == 2{
+            //others
+        }
+    }
+    
+    
+    
     //cell click action
     
     

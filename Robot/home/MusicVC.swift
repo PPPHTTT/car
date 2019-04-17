@@ -35,10 +35,11 @@ class MusicVC: UIViewController,UITableViewDelegate,UITableViewDataSource {
             //若当前未播放音乐或所播放音乐不同，则重新播放
             if (MusicOperationTools.shareInstance.tool.player == nil)||MusicOperationTools.shareInstance.getCurIndex() != path.row{
                 MusicOperationTools.shareInstance.playMusic(musicMs[path.row])
-            }else{                
+            }else{
                 MusicOperationTools.shareInstance.playCurrentMusic()
             }
         }
+
         //sender.isSelected = !sender.isSelected
         musicTV.reloadData()
     }

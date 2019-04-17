@@ -29,8 +29,13 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
     let tool = toolfuncs()
     //弹出菜单
     var menuView : UIView = UIView()
+    var menuControlView : UIView = UIView()
     var menuTV : UITableView = UITableView()
     var menuCloseButton : UIButton = UIButton()
+    var playSequenceImage : UIImageView = UIImageView()
+    var playSequenceText : UILabel = UILabel()
+    var musicCount : UILabel = UILabel()
+    var playSequenceButton : UIButton = UIButton()
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -39,28 +44,75 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        //print(MusicOperationTools.shareInstance.musicMs.count)
         return MusicOperationTools.shareInstance.musicMs.count
     }
     private func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-         return 121*tool.WSCALE
+         return 100*tool.WSCALE
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = "MyFirstSwift"
-        cell.detailTextLabel?.text = "gaga"
+        let playMark = UIImageView()
+        let musicName = UILabel()
+        let album = UILabel()
+        //init
+        playMark.image = UIImage(named: "5_播放")
+        cell.addSubview(playMark)
+        musicName.text = "《\(MusicOperationTools.shareInstance.musicMs[indexPath.row].name!)》 \(MusicOperationTools.shareInstance.musicMs[indexPath.row].singer!)"
+        musicName.font = UIFont.init(name: "PingFangSC", size: 28*tool.HSCALE)
+        musicName.font = UIFont.systemFont(ofSize: 28*tool.HSCALE, weight: UIFont.Weight.regular)
+        cell.addSubview(musicName)
+        album.text = "- 郭德纲相声"
+        album.font = UIFont.init(name: "PingFangSC", size: 24*tool.HSCALE)
+        album.font = UIFont.systemFont(ofSize: 24*tool.HSCALE, weight: UIFont.Weight.regular)
+        cell.addSubview(album)
+        //约束
+        playMark.snp.makeConstraints { (make) -> Void in
+            make.height.equalTo(28*tool.HSCALE)
+            make.width.equalTo(23*tool.HSCALE)
+            make.left.equalTo(cell.snp.left).offset(30*tool.WSCALE)
+            make.centerY.equalTo(cell.snp.centerY)
+        }
+        if MusicOperationTools.shareInstance.getCurIndex() == indexPath.row {
+            musicName.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(playMark.snp.right).offset(20*tool.WSCALE)
+                make.centerY.equalTo(cell.snp.centerY)
+            }
+            musicName.textColor = UIColor(red: 0x37/255, green: 0x88/255, blue: 0xe4/255, alpha: 1)
+            album.textColor = UIColor(red: 0x37/255, green: 0x88/255, blue: 0xe4/255, alpha: 1)
+        }else{
+            playMark.isHidden = true
+            musicName.snp.makeConstraints { (make) -> Void in
+                make.left.equalTo(cell.snp.left).offset(30*tool.WSCALE)
+                make.centerY.equalTo(cell.snp.centerY)
+            }
+            musicName.textColor = UIColor(red: 0x33/255, green: 0x33/255, blue: 0x33/255, alpha: 1)
+            album.textColor = UIColor(red: 0x99/255, green: 0x99/255, blue: 0x99/255, alpha: 1)
+        }
+        album.snp.makeConstraints { (make) -> Void in
+            make.centerY.equalTo(cell.snp.centerY)
+            make.left.equalTo(musicName.snp.right).offset(10*tool.WSCALE)
+        }
+        
         return cell
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
+        menuTV.delegate = self
+        menuTV.dataSource = self
         musicSlider.value = 0
         curTime.text = "00:00"
         addTimer()
+        
+        //注册点击事件
+        musicSlider.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(MusicDetailVC.handleTap(sender:))))
+        playSequenceButton.addTarget(pthread_self(), action: #selector(MusicDetailVC.changeSeq(sender:)), for: .touchUpInside)
+        menuCloseButton.addTarget(self, action: #selector(MusicDetailVC.closeMenu), for: UIControl.Event.touchUpInside)
+        //z播放结束自动下一曲
         NotificationCenter.default.addObserver(self, selector: #selector(MusicDetailVC.nextMusic), name: NSNotification.Name(rawValue: kPlayFinishNotification), object: nil)
         // Do any additional setup after loading the view, typically from a nib.
-        
-
     }
     //加载时执行
     override func viewWillAppear(_ animated: Bool) {
@@ -90,9 +142,24 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
         let costTime = MusicOperationTools.shareInstance.getMusicMessageModel().totalTime * TimeInterval(musicSlider.value)
         MusicOperationTools.shareInstance.seekToTime(costTime)//跳到指定时间点播放
     }
-    //bug exist?????????????????
-    @IBAction func tap(_ sender: UITapGestureRecognizer) {
-        print("tap")
+//    //bug exist?????????????????
+//    @IBAction func tap(_ sender: UITapGestureRecognizer) {
+//        print("tap")
+//        sender.numberOfTapsRequired = 1
+//        let value = sender.location(in: sender.view).x / (sender.view?.frame.width)!
+//        musicSlider.value = Float(value)
+//
+//        let totalTime = MusicOperationTools.shareInstance.getMusicMessageModel().totalTime
+//        let costTime = totalTime * TimeInterval(value)
+//        MusicOperationTools.shareInstance.seekToTime(costTime)//跳到指定时间点播放
+//      //  let totalTime = QQMusicOperationTool.shareInstance.getMusicMessageModel().totalTime
+//       // let costTime = totalTime * TimeInterval(value)
+//        //QQMusicOperationTool.shareInstance.seekToTime(costTime)//跳到指定时间点播放
+//    }
+    //--------------------------------------------------------------------//
+    //对应方法
+    //--------------------------------------------------------------------//
+    @objc func handleTap(sender: UITapGestureRecognizer) {
         sender.numberOfTapsRequired = 1
         let value = sender.location(in: sender.view).x / (sender.view?.frame.width)!
         musicSlider.value = Float(value)
@@ -100,12 +167,34 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
         let totalTime = MusicOperationTools.shareInstance.getMusicMessageModel().totalTime
         let costTime = totalTime * TimeInterval(value)
         MusicOperationTools.shareInstance.seekToTime(costTime)//跳到指定时间点播放
-      //  let totalTime = QQMusicOperationTool.shareInstance.getMusicMessageModel().totalTime
-       // let costTime = totalTime * TimeInterval(value)
-        //QQMusicOperationTool.shareInstance.seekToTime(costTime)//跳到指定时间点播放
     }
-    
-    
+    @objc func changeSeq(sender: UIButton) {
+        sender.isSelected = !sender.isSelected
+        if sender.isSelected{
+            playSequenceImage.image = UIImage(named: "倒序")
+            playSequenceText.text = "倒序播放"
+        }else{
+            playSequenceImage.image = UIImage(named: "顺序")
+            playSequenceText.text = "顺序播放"
+        }
+        ///
+        ///
+        ///
+        menuTV.reloadData()
+    }
+    //close menu button action
+    @objc func closeMenu(){
+        //动画
+        UIView.animate(withDuration: 1, animations: {
+            //也可以用改变的约束不多，也可以用snp_updateConstraints方法
+            self.menuView.snp.remakeConstraints({ (make) in
+                make.top.equalTo(self.bodyView.snp.bottom).offset(0)
+            })
+            //用来立即刷新布局（不写无法实现动画移动，会变成瞬间移动）
+            self.view.layoutIfNeeded()
+        })
+        //menuView.isHidden = true
+    }
     //5buttions
     @IBAction func likeMusic(_ sender: UIButton) {
     }
@@ -233,6 +322,7 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
         /*********************************************************/
         //init menu
         /*********************************************************/
+        menuView.addSubview(menuControlView)
         menuView.addSubview(menuTV)
         menuView.addSubview(menuCloseButton)
         self.view.addSubview(menuView)
@@ -241,9 +331,52 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
             make.height.equalTo(953*tool.HSCALE)
             make.bottom.equalTo(bodyView.snp.bottom).offset(0)
         }
+        menuControlView.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(750*tool.WSCALE)
+            make.height.equalTo(121*tool.HSCALE)
+            make.top.equalTo(menuView.snp.top).offset(0)
+        }
+        menuControlView.backgroundColor = UIColor.white
+        /////////////////////////////////////////////////////////////////////////////////
+        menuControlView.addSubview(playSequenceImage)
+        menuControlView.addSubview(playSequenceButton)
+        menuControlView.addSubview(playSequenceText)
+        menuControlView.addSubview(musicCount)
+        playSequenceImage.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(37*tool.WSCALE)
+            make.height.equalTo(36*tool.WSCALE)
+            make.left.equalTo(menuControlView.snp.left).offset(40*tool.WSCALE)
+            make.centerY.equalTo(menuControlView.snp.centerY)
+        }
+        playSequenceText.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(playSequenceImage.snp.right).offset(20*tool.WSCALE)
+            make.centerY.equalTo(menuControlView.snp.centerY)
+        }
+        playSequenceButton.snp.makeConstraints { (make) -> Void in
+            make.width.equalTo(37*tool.WSCALE)
+            make.height.equalTo(34*tool.WSCALE)
+            make.right.equalTo(menuControlView.snp.right).offset(-45*tool.WSCALE)
+            make.centerY.equalTo(menuControlView.snp.centerY)
+        }
+        musicCount.snp.makeConstraints { (make) -> Void in
+            make.left.equalTo(playSequenceText.snp.right).offset(20*tool.WSCALE)
+            make.centerY.equalTo(menuControlView.snp.centerY)
+        }
+        playSequenceImage.image = UIImage(named: "顺序")
+        playSequenceText.text = "顺序播放"
+        musicCount.text = "\(MusicOperationTools.shareInstance.musicMs.count)"
+        playSequenceButton.setBackgroundImage(UIImage(named: "倒序"), for: .normal)
+        playSequenceButton.setBackgroundImage(UIImage(named: "顺序"), for: .selected)
+        playSequenceText.font = UIFont.init(name: "PingFangSC", size: 28*tool.HSCALE)
+        playSequenceText.font = UIFont.systemFont(ofSize: 28*tool.HSCALE, weight: UIFont.Weight.regular)
+        playSequenceText.textColor = UIColor(red: 0x33/255, green: 0x33/255, blue: 0x33/255, alpha: 1)
+        musicCount.font = UIFont.init(name: "PingFangSC", size: 28*tool.HSCALE)
+        musicCount.font = UIFont.systemFont(ofSize: 28*tool.HSCALE, weight: UIFont.Weight.regular)
+        musicCount.textColor = UIColor(red: 0x99/255, green: 0x99/255, blue: 0x99/255, alpha: 1)
+        ///////////////////////////////////////////////////////////////////////////////////
         menuTV.snp.makeConstraints { (make) -> Void in
             make.width.equalTo(750*tool.WSCALE)
-            make.top.equalTo(menuView.snp.top).offset(121*tool.HSCALE)
+            make.top.equalTo(menuControlView.snp.bottom).offset(0*tool.HSCALE)
             make.bottom.equalTo(menuView.snp.bottom).offset(-98*tool.HSCALE)
         }
         menuCloseButton.snp.makeConstraints { (make) -> Void in
@@ -253,14 +386,11 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
         }
         menuCloseButton.setTitle("关闭", for: .normal)
         menuCloseButton.setTitleColor(UIColor(red: 0x33/255, green: 0x33/255, blue: 0x33/255, alpha: 1), for: .normal)
-        //menuCloseButton.backgroundColor = UIColor.blue
         menuCloseButton.titleLabel?.font = UIFont.init(name: "PingFangSC", size: 36*tool.HSCALE)
         menuCloseButton.titleLabel?.font = UIFont.systemFont(ofSize: 36*tool.HSCALE, weight: UIFont.Weight.regular)
         menuCloseButton.layer.borderWidth = 0.5
         menuCloseButton.layer.borderColor = UIColor(red: 0xd5/255, green: 0xd5/255, blue: 0xd5/255, alpha: 1).cgColor
-        //添加点击事件
-        menuCloseButton.addTarget(self, action: Selector("closeMenu"), for: UIControl.Event.touchUpInside)
-        menuView.isHidden = true
+       // menuView.isHidden = true
         //---------------------------------------------------------//
         //end menu
         //---------------------------------------------------------//
@@ -278,20 +408,7 @@ class MusicDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSource
         //end button
         //---------------------------------------------------------//
     }
-    //close menu button action
-    @objc func closeMenu(){
-        //
-        //动画
-        UIView.animate(withDuration: 1, animations: {
-        //也可以用改变的约束不多，也可以用snp_updateConstraints方法
-            self.menuView.snp.remakeConstraints({ (make) in
-                make.top.equalTo(self.bodyView.snp.bottom).offset(0)
-        })
-        //用来立即刷新布局（不写无法实现动画移动，会变成瞬间移动）
-        self.view.layoutIfNeeded()
-    })
-        //menuView.isHidden = true
-    }
+
     
     func addTimer() {
         updateTimesTimer = Timer(timeInterval: 1, target: self, selector: #selector(MusicDetailVC.updateTimes), userInfo: nil, repeats: true)

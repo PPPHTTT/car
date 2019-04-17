@@ -86,18 +86,16 @@ class MusicPlayerTools: NSObject {
         player?.currentTime -= value
     }
     
-    func rate(_ value :Float){//1.0 is normal
-        player?.rate = value
-    }
     
 //    func volume(_ value : Float){//1.0 is full
 //        volume = value
 //        player?.volume = volume
 //    }
 }
-
+//监听音乐是否播放完毕
 extension MusicPlayerTools: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: kPlayFinishNotification), object: nil)
+        //MusicOperationTools.shareInstance.nextMusic()
     }
 }
